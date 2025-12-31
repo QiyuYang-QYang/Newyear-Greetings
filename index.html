@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Year Quest</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #f4f7f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+        .container { background: white; width: 100%; max-width: 500px; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { color: #333; text-align: center; }
+        pre { font-family: monospace; background: #222; color: #00ff00; padding: 15px; overflow-x: auto; border-radius: 8px; line-height: 1.0; font-size: 8px; white-space: pre; }
+        button { background: #007AFF; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container" id="app"></div>
+    <script>
+        // 包含来自源文件的完整坐标数据 
+        const pixelData = [
+            {x:0,c:"█",y:0},{x:0,c:"█",y:1},{x:0,c:"█",y:2},{x:0,c:"█",y:3},{x:0,c:"█",y:4},{x:1,c:"▀",y:2},{x:2,c:"█",y:0},{x:2,c:"█",y:1},{x:2,c:"█",y:2},{x:2,c:"█",y:3},{x:2,c:"█",y:4},
+            {x:4,c:"█",y:0},{x:4,c:"█",y:1},{x:4,c:"█",y:2},{x:4,c:"█",y:3},{x:5,c:"▀",y:2},{x:5,c:"▀",y:4},{x:6,c:"█",y:0},{x:6,c:"█",y:1},{x:6,c:"█",y:2},{x:6,c:"█",y:3},
+            {x:8,c:"█",y:0},{x:8,c:"█",y:1},{x:8,c:"█",y:2},{x:8,c:"█",y:3},{x:8,c:"█",y:4},{x:9,c:"▀",y:2},{x:9,c:"▀",y:4},{x:10,c:"█",y:3},{x:10,c:"█",y:4},
+            {x:12,c:"█",y:0},{x:12,c:"█",y:1},{x:12,c:"█",y:2},{x:12,c:"█",y:3},{x:12,c:"█",y:4},{x:13,c:"▀",y:2},{x:13,c:"▀",y:4},{x:14,c:"█",y:3},{x:14,c:"█",y:4},
+            {x:16,c:"█",y:4},{x:16,c:"█",y:3},{x:17,c:"█",y:2},{x:17,c:"█",y:1},{x:17,c:"█",y:0},{x:18,c:"█",y:4},{x:18,c:"█",y:3},
+            {x:21,c:"█",y:0},{x:21,c:"█",y:1},{x:21,c:"█",y:2},{x:21,c:"█",y:3},{x:21,c:"█",y:4},{x:22,c:"▀",y:3},{x:23,c:"█",y:0},{x:23,c:"█",y:1},{x:23,c:"█",y:2},{x:23,c:"█",y:3},{x:23,c:"█",y:4},
+            {x:25,c:"█",y:0},{x:25,c:"█",y:1},{x:25,c:"█",y:2},{x:25,c:"█",y:3},{x:25,c:"█",y:4},{x:26,c:"▀",y:0},{x:26,c:"▀",y:2},{x:26,c:"▀",y:4},{x:27,c:"▀",y:0},{x:27,c:"▀",y:2},{x:27,c:"▀",y:4},
+            {x:29,c:"█",y:1},{x:29,c:"█",y:2},{x:29,c:"█",y:3},{x:29,c:"█",y:4},{x:30,c:"█",y:0},{x:31,c:"█",y:1},{x:31,c:"█",y:2},{x:31,c:"█",y:3},{x:31,c:"█",y:4},
+            {x:34,c:"█",y:4},{x:34,c:"█",y:3},{x:35,c:"█",y:2},{x:35,c:"█",y:1},{x:35,c:"█",y:0},{x:36,c:"█",y:4},{x:36,c:"█",y:3},
+            {x:38,c:"█",y:0},{x:38,c:"█",y:1},{x:38,c:"█",y:2},{x:38,c:"█",y:3},{x:38,c:"█",y:4},{x:39,c:"▀",y:0},{x:39,c:"▀",y:2},{x:39,c:"▀",y:4},{x:40,c:"▀",y:0},{x:40,c:"▀",y:2},{x:40,c:"▀",y:4},
+            {x:42,c:"█",y:0},{x:42,c:"█",y:1},{x:42,c:"█",y:2},{x:42,c:"█",y:3},{x:43,c:"▀",y:2},{x:43,c:"▀",y:4},{x:44,c:"█",y:0},{x:44,c:"█",y:1},{x:44,c:"█",y:2},{x:44,c:"█",y:3},
+            {x:46,c:"█",y:0},{x:46,c:"█",y:1},{x:46,c:"█",y:2},{x:46,c:"█",y:3},{x:46,c:"█",y:4},{x:47,c:"▀",y:2},{x:47,c:"▀",y:4},{x:48,c:"█",y:3},{x:48,c:"█",y:4},{x:48,c:"█",y:0},
+            {x:51,c:"█",y:4},{x:51,c:"█",y:3},{x:51,c:"█",y:2},{x:51,c:"█",y:0},
+            {x:54,c:"█",y:1},{x:54,c:"█",y:2},{x:54,c:"█",y:3},{x:56,c:"▀",y:2},{x:58,c:"█",y:2},{x:59,c:"▀",y:3},{x:60,c:"█",y:2},{x:62,c:"▀",y:2},{x:64,c:"█",y:1},{x:64,c:"█",y:2},{x:64,c:"█",y:3}
+        ];
+
+        let step = 0;
+        const app = document.getElementById('app');
+
+        function render() {
+            if (step < 1) {
+                app.innerHTML = `<h2>New Year Quest</h2><p>准备好开启你的跨年礼物了吗？</p><button onclick="step++;render()">开始解锁</button>`;
+            } else {
+                const maxX = Math.max(...pixelData.map(p => p.x));
+                const maxY = Math.max(...pixelData.map(p => p.y));
+                let grid = Array.from({length: maxY + 1}, () => Array(maxX + 1).fill(' '));
+                pixelData.forEach(p => { grid[maxY - p.y][p.x] = p.c; });
+                app.innerHTML = `<h3>Happy New Year!</h3><pre>${grid.map(r => r.join('')).join('\n')}</pre><p style='text-align:center; font-size:12px; color:#888;'>o(^_^)o</p>`;
+            }
+        }
+        render();
+    </script>
+</body>
+</html>
