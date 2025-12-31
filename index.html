@@ -3,18 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Year Quest</title>
+    <title>New Year Quest 2026</title>
     <style>
         body { font-family: -apple-system, sans-serif; background: #f4f7f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
         .container { background: white; width: 100%; max-width: 500px; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h2 { color: #333; text-align: center; }
-        pre { font-family: monospace; background: #222; color: #00ff00; padding: 15px; overflow-x: auto; border-radius: 8px; line-height: 1.0; font-size: 8px; white-space: pre; }
-        button { background: #007AFF; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
+        h2 { color: #333; text-align: center; margin-top: 0; }
+        .question { margin-bottom: 20px; line-height: 1.6; color: #444; font-size: 17px; }
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        button { background: #007AFF; color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-size: 16px; transition: all 0.2s; font-weight: 500; }
+        button:hover { background: #0056b3; }
+        textarea { width: 100%; height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; margin-bottom: 15px; resize: none; }
+        pre { font-family: "Courier New", Courier, monospace; background: #222; color: #00ff00; padding: 15px; overflow-x: auto; border-radius: 10px; line-height: 1.0; font-size: 8px; white-space: pre; }
+        .loading { text-align: center; font-style: italic; color: #888; margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="container" id="app"></div>
+
     <script>
+        const formspreeURL = "https://formspree.io/f/xjgkvgkl";
+
+        // 完整的题目数据
+        const questions = [
+            { q: "【夏威夷历史】《Aloha ʻOe》是谁创作的？", o: ["卡拉卡瓦国王", "利留卡拉尼女王", "卡美哈梅哈大帝"], a: 1 },
+            { q: "【爵士与特效】Scat Singing 在 VFX 中用于驱动什么？", o: ["渲染输出", "音画同步", "材质贴图"], a: 1 },
+            { q: "【VFX感知】模拟快门产生的模糊叫？", o: ["深层合成", "运动模糊", "全局光照"], a: 1 },
+            { q: "【匹兹堡地理】三姐妹桥是以谁命名的？", o: ["三位总统", "三位钢铁大亨", "罗伯托、安迪、雷切尔"], a: 2 },
+            { q: "【Final Quest】你最近最期待的一件事情是什么？年度颜色及原因？", isOpen: true }
+        ];
+
         // 包含来自源文件的完整坐标数据 
         const pixelData = [
             {x:0,c:"█",y:0},{x:0,c:"█",y:1},{x:0,c:"█",y:2},{x:0,c:"█",y:3},{x:0,c:"█",y:4},{x:1,c:"▀",y:2},{x:2,c:"█",y:0},{x:2,c:"█",y:1},{x:2,c:"█",y:2},{x:2,c:"█",y:3},{x:2,c:"█",y:4},
@@ -37,16 +54,56 @@
         const app = document.getElementById('app');
 
         function render() {
-            if (step < 1) {
-                app.innerHTML = `<h2>New Year Quest</h2><p>准备好开启你的跨年礼物了吗？</p><button onclick="step++;render()">开始解锁</button>`;
+            if (step < questions.length) {
+                const item = questions[step];
+                let html = `<h2>Step ${step + 1}</h2><p class="question">${item.q}</p>`;
+                if (!item.isOpen) {
+                    html += `<div class="options">`;
+                    item.o.forEach((opt, i) => {
+                        html += `<button onclick="handleSelect(${i})">${opt}</button>`;
+                    });
+                    html += `</div>`;
+                } else {
+                    html += `<textarea id="finalAns" placeholder="在此输入你的回答..."></textarea>`;
+                    html += `<button style="width:100%" onclick="handleSubmit()">提交并解锁宝藏</button>`;
+                }
+                app.innerHTML = html;
             } else {
-                const maxX = Math.max(...pixelData.map(p => p.x));
-                const maxY = Math.max(...pixelData.map(p => p.y));
-                let grid = Array.from({length: maxY + 1}, () => Array(maxX + 1).fill(' '));
-                pixelData.forEach(p => { grid[maxY - p.y][p.x] = p.c; });
-                app.innerHTML = `<h3>Happy New Year!</h3><pre>${grid.map(r => r.join('')).join('\n')}</pre><p style='text-align:center; font-size:12px; color:#888;'>o(^_^)o</p>`;
+                showResult();
             }
         }
+
+        window.handleSelect = (i) => {
+            step++;
+            render();
+        };
+
+        window.handleSubmit = () => {
+            const val = document.getElementById('finalAns').value;
+            if (!val) return alert("请写下你的回答再提交哦！");
+            
+            fetch(formspreeURL, {
+                method: 'POST',
+                body: JSON.stringify({ message: val }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            step++;
+            render();
+        };
+
+        function showResult() {
+            const maxX = Math.max(...pixelData.map(p => p.x));
+            const maxY = Math.max(...pixelData.map(p => p.y));
+            let grid = Array.from({ length: maxY + 1 }, () => Array(maxX + 1).fill(' '));
+
+            pixelData.forEach(p => {
+                grid[maxY - p.y][p.x] = p.c;
+            });
+
+            const resultStr = grid.map(row => row.join('')).join('\n');
+            app.innerHTML = `<h2>Challenge Complete!</h2><pre>${resultStr}</pre><p style='text-align:center; color:#888;'>o(^_^)o</p>`;
+        }
+
         render();
     </script>
 </body>
