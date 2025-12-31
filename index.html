@@ -65,7 +65,7 @@
                     html += `</div>`;
                 } else {
                     html += `<textarea id="finalAns" placeholder="在此输入你的回答..."></textarea>`;
-                    html += `<button style="width:100%" onclick="handleSubmit()">提交并解锁宝藏</button>`;
+                    html += `<button style="width:100%" onclick="handleSubmit()">提交</button>`;
                 }
                 app.innerHTML = html;
             } else {
@@ -80,7 +80,7 @@
 
         window.handleSubmit = () => {
             const val = document.getElementById('finalAns').value;
-            if (!val) return alert("请写下你的回答再提交哦！");
+            if (!val) return alert("请写下你的回答再提交！");
             
             fetch(formspreeURL, {
                 method: 'POST',
@@ -101,7 +101,7 @@
             });
 
             const resultStr = grid.map(row => row.join('')).join('\n');
-            app.innerHTML = `<h2>Challenge Complete!</h2><pre>${resultStr}</pre><p style='text-align:center; color:#888;'>o(^_^)o</p>`;
+            app.innerHTML = `<h2>Challenge Complete!</h2><pre>${resultStr}</pre><p style='text-align:center; color:#888;'>Regardless of how you perfromed in 2025, just embrace your new year! 本命年快乐！龙马精神，马到成功o(^_^)o</p>`;
         }
 
         render();
